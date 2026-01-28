@@ -9,119 +9,228 @@
 \usepackage{titlesec}
 \usepackage{fancyhdr}
 \usepackage{setspace}
-\usepackage{tcolorbox}
+\usepackage[skins,breakable]{tcolorbox} % 引入高级盒子库
 \usepackage{tikz}
 \usepackage{fontawesome5}
-\usepackage{hyperref}
+\usepackage[colorlinks=true,linkcolor=secondarycolor,urlcolor=secondarycolor]{hyperref}
 
-\geometry{left=2.2cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+% --- 页面设置 ---
+\geometry{left=2.5cm,right=2.5cm,top=2.8cm,bottom=2.8cm}
+\setstretch{1.5} % 调整行间距
 
-\definecolor{maincolor}{RGB}{26,60,97}
-\definecolor{accentcolor}{RGB}{192,57,43}
-\definecolor{secondarycolor}{RGB}{41,128,185}
-\definecolor{lightgray}{RGB}{236,240,241}
-\definecolor{darkgray}{RGB}{52,73,94}
-\definecolor{gold}{RGB}{241,196,15}
-\definecolor{softblue}{RGB}{52,152,219}
+% --- 颜色定义 (Flat UI 风格) ---
+\definecolor{maincolor}{RGB}{44, 62, 80}       % 深蓝灰 (用于主标题、边框)
+\definecolor{secondarycolor}{RGB}{41, 128, 185}% 亮蓝 (用于链接、次要元素)
+\definecolor{accentcolor}{RGB}{192, 57, 43}    % 砖红 (用于强调、答案标记)
+\definecolor{bgcolor}{RGB}{236, 240, 241}      % 浅灰 (用于背景)
+\definecolor{boxbg}{RGB}{250, 250, 250}        % 极浅灰 (用于盒子背景)
 
-\titleformat{\section}
-{\Large\bfseries\color{maincolor}}
-{\thesection}{1em}{}[{\titlerule[0.8pt]}]
-
-\titleformat{\subsection}
-{\large\bfseries\color{secondarycolor}}
-{\thesubsection}{1em}{}
-
-\setlist[itemize]{leftmargin=2em,itemsep=0.4em}
-\setlist[enumerate]{leftmargin=2em,itemsep=0.5em,label=\color{maincolor}\textbf{\arabic*.}}
-
+% --- 页眉页脚设置 ---
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\color{darkgray}论述题整理}
-\fancyhead[R]{\small\color{darkgray}\today}
-\fancyfoot[L]{\small\color{gray}计算01 \& 02}
-\fancyfoot[R]{\small\color{gray}\thepage}
+\fancyhead[L]{\small\color{maincolor}\bfseries\faBook\ 毛概论述题复习资料}
+\fancyhead[R]{\small\color{gray}\today}
+\fancyfoot[C]{\small\color{gray}\thepage}
 
-\renewcommand{\headrulewidth}{0.8pt}
-\renewcommand{\headrule}{{\color{maincolor}\hrule height\headrulewidth}}
-\renewcommand{\footrulewidth}{0.5pt}
-\renewcommand{\footrule}{{\color{lightgray}\hrule height\footrulewidth}}
+% 自定义页眉分割线 (TikZ 绘制)
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[C]{%
+    \begin{tikzpicture}[remember picture, overlay]
+        \draw[maincolor, line width=1.5pt] ([yshift=-1cm]current page.north west) -- ([yshift=-1cm]current page.north east);
+    \end{tikzpicture}%
+}
 
-\setstretch{1.4}
+% --- 题目盒子样式 ---
+\newtcolorbox{qbox}[2][]{
+    enhanced,           % 启用高级绘图引擎
+    breakable,          % 允许跨页
+    colback=boxbg,      % 背景色
+    colframe=maincolor, % 边框色
+    coltitle=white,     % 标题文字颜色
+    fonttitle=\bfseries\large,
+    attach boxed title to top left={xshift=20pt, yshift*=-3.5mm}, % 标题位置
+    boxed title style={
+        colback=maincolor,
+        frame hidden,
+        arc=3pt,
+        drop lifted shadow=black!30 % 标题阴影
+    },
+    title={\faQuestionCircle\ 论述题 #2},
+    drop fuzzy shadow,  % 盒子整体阴影
+    arc=5pt,
+    left=15pt,
+    right=15pt,
+    top=18pt,           % 顶部留白给标题
+    bottom=12pt,
+    before skip=25pt,   % 盒子前间距
+    after skip=10pt,    % 盒子后间距
+    #1
+}
+
+% --- 答案盒子样式 ---
+\newtcolorbox{ansbox}{
+    enhanced,
+    breakable,
+    frame hidden,       % 隐藏四周线框
+    colback=white,      % 背景纯白
+    borderline west={4pt}{0pt}{accentcolor}, % 左侧加粗装饰线
+    left=15pt,
+    right=10pt,
+    top=5pt,
+    bottom=5pt,
+    coltext=black!85,   % 正文颜色略深
+    before skip=5pt,
+    after skip=20pt
+}
+
+% --- 命令定义 ---
 
 \newcommand{\question}[2]{
-    \vspace{0.8em}
-    \begin{tcolorbox}[
-        colback=lightgray!30,
-        colframe=maincolor,
-        boxrule=1.2pt,
-        arc=3pt,
-        left=8pt,
-        right=8pt,
-        top=6pt,
-        bottom=6pt,
-        title={\small\color{white}\faQuestionCircle\ 论述题 #1},
-        coltitle=white,
-        colbacktitle=maincolor
-    ]
-        \textbf{\large\color{darkgray}#2}
-    \end{tcolorbox}
-    \vspace{0.3em}
+    \phantomsection
+    \addcontentsline{toc}{section}{#1：#2}
+    \begin{qbox}{#1}
+        \color{maincolor!80!black}\bfseries #2
+    \end{qbox}
 }
 
 \newcommand{\answer}[1]{
-    \vspace{0.5em}
-    % 关键修改：去掉了 minipage 环境，允许内容自然跨页
-    \noindent\textbf{\color{accentcolor}\faEdit\ 答：}#1
-    \vspace{0.8em}
+    \begin{ansbox}
+        \textbf{\color{accentcolor}\faEdit\ 答：}#1
+    \end{ansbox}
 }
 
-
 \newcommand{\reference}[1]{
-    \textcolor{accentcolor}{\small\faBookmark\ （#1）}
+    \par\vspace{0.8em}\hfill\textcolor{secondarycolor}{\small\faBookmark\ #1}
 }
 
 \newcommand{\highlight}[1]{
-    \textcolor{maincolor}{\textbf{#1}}
+    \textcolor{accentcolor}{\textbf{#1}}
 }
+
+% 列表样式优化
+\setlist[enumerate]{label=\color{secondarycolor}\textbf{\arabic*.}, leftmargin=*, itemsep=0.6em}
+\setlist[itemize]{label=\color{secondarycolor}\textbullet, leftmargin=*, itemsep=0.4em}
 
 \begin{document}
 
-\begin{center}
-  
-    % 主标题
-    {\color{maincolor}\LARGE\bfseries 《毛泽东思想和中国特色社会主义理论体系概论》}\\[0.8em]
+% --- 封面页 ---
+\begin{titlepage}
+    \begin{tikzpicture}[remember picture, overlay]
+        % 背景装饰
+        \fill[bgcolor] (current page.south west) rectangle (current page.north east);
+        % 角落圆
+        \fill[maincolor] (current page.north west) circle (5cm);
+        \fill[secondarycolor] (current page.south east) circle (6cm);
+        % 图标水印
+        \node[anchor=center, opacity=0.03, rotate=30] at (current page.center) {\fontsize{150}{150}\selectfont\faBook};
+    \end{tikzpicture}
     
-    % 副标题
-    {\color{secondarycolor}\Large \faBook\ 论述题复习}\\[0.8em]
+    \centering
+    \vspace*{4cm}
     
-    % 装饰线条
-    {\color{maincolor}\hrule height 2pt}
-\end{center}
+    {\color{secondarycolor}\Large \faUniversity\ 复习资料整理}\\[0.8cm]
+    
+    {\color{maincolor}\bfseries\fontsize{30}{38}\selectfont 毛泽东思想和中国特色社会主义\\[0.3em] 理论体系概论}\\[2cm]
+    
+    % 封面中间的盒子
+    \begin{tcolorbox}[
+        enhanced,
+        colback=white,
+        colframe=maincolor,
+        boxrule=1.5pt,
+        arc=6pt,
+        width=0.85\textwidth,
+        drop fuzzy shadow,
+        halign=center,
+        top=1.2cm, bottom=1.2cm
+    ]
+        {\Large\bfseries \faList\ 论述题专项整理}\\[0.8em]
+        {\color{gray}\small 重点难点 \textbullet\ 详细解析 \textbullet\ 考前必看}
+    \end{tcolorbox}
+    
+    \vfill
+    
+    {\color{maincolor}\large \textbf{\faUser\ 整理：}计算01 \& 02}\\[0.8em]
+    {\color{maincolor}\large \textbf{\faCalendar\ 日期：}\today}
+    
+    \vspace*{2.5cm}
+\end{titlepage}
 
+% --- 目录页 ---
+\newpage
+{
+    \hypersetup{linkcolor=black} % 目录链接黑色，避免花哨
+    \begin{tcolorbox}[
+        enhanced,
+        colback=white,
+        colframe=secondarycolor,
+        title={\Large\bfseries\faListUl\ 目录},
+        coltitle=white,
+        colbacktitle=secondarycolor,
+        arc=4pt,
+        drop fuzzy shadow,
+        top=10pt, bottom=10pt
+    ]
+        % 隐藏目录自身的标题（因为盒子已经有标题了）
+        \renewcommand{\contentsname}{\vspace{-1.5cm}} 
+        \tableofcontents
+    \end{tcolorbox}
+}
+\newpage
 
+% --- 正文内容 ---
 
+\question{1}{如何理解马克思主义中国化时代化的提出及其内涵要义？}
 
+\question{2}{如何理解马克思主义中国化时代化两大理论成果及其历史地位？}
 
+\question{3}{学习本课程的要求和方法是什么？}
+
+\question{4}{为什么我们党能够开辟新民主主义革命道路、符合中国特点的社会主义改造道路、中国特色社会主义建设道路？}
+
+\question{5}{如何理解新民主主义革命的政治、经济和文化纲领？}
+
+\question{6}{如何理解新民主主义革命的基本经验？}
+
+\question{7}{社会主义改造的历史经验是什么？}
+
+\question{8}{社会主义建设道路初步探索过程中取得了哪些重大理论成果？}
+
+\question{9}{如何认识中国特色社会主义理论体系的构成及其形成发展？}
+
+\question{10}{如何认识邓小平理论的主要内容和历史地位？}
+
+\question{11}{如何理解“三个代表”重要思想的核心观点？}
 
 \question{12}{“三个代表”重要思想的主要内容包括哪些？}
 
-\answer{\reference{课本P202}“三个代表”重要思想的主要内容包括以下六点：
+\answer{
+    “三个代表”重要思想的主要内容包括以下六点：
 
-\begin{enumerate}
-    \item \highlight{发展是党执政兴国的第一要务}。必须始终紧紧抓住发展这个执政兴国的第一要务，将党的先进性和社会主义制度的优越性落实到发展先进生产力、发展先进文化、实现最广大人民的根本利益上来。发展是中国特色社会主义不断巩固和推进的关键，也是在国际竞争中赢得主动、解决前进中问题的根本途径。
-
-    \item \highlight{建立社会主义市场经济体制}。在社会主义条件下发展市场经济是改革开放新的历史性突破，是前无古人的伟大创举。明确建立社会主义市场经济体制为我国经济体制改革的目标，既要发挥市场经济的长处，又要发挥社会主义制度的优越性，坚持从我国实际出发，走出一条自己的路。
-
-    \item \highlight{全面建设小康社会}。立足于我国基本国情，在人民生活总体达到小康水平的基础上，提出全面建设更高水平、更全面、更平衡的小康社会的奋斗目标。针对当时小康低水平、不全面、不平衡的问题，进行了前瞻性的战略规划。
-
-    \item \highlight{建设社会主义政治文明}。将建设社会主义政治文明与物质文明、精神文明一起确立为社会主义现代化全面发展的三大基本目标。最根本的是坚持党的领导、人民当家作主和依法治国的有机统一，发展社会主义民主政治，建设社会主义法治国家。
-
-    \item \highlight{实施“引进来”和“走出去”相结合的对外开放战略}。对外开放是一项长期的基本国策。适应经济全球化趋势和加入世界贸易组织的新形势，坚持"引进来"和"走出去"相结合，全面提高对外开放水平，充分利用国际国内两个市场、两种资源，以开放促改革促发展。
-
-    \item \highlight{推进党的建设新的伟大工程}。办好中国的事情关键在党，紧紧围绕建设什么样的党、怎样建设党的根本问题，以改革的精神加强和改进党的建设，坚持党的领导核心地位，增强党的阶级基础和扩大党的群众基础，使党始终保持先进性和纯洁性。
-\end{enumerate}
+    \begin{enumerate}
+        \item \highlight{发展是党执政兴国的第一要务}。必须始终紧紧抓住发展这个执政兴国的第一要务，将党的先进性和社会主义制度的优越性落实到发展先进生产力、发展先进文化、实现最广大人民的根本利益上来。发展是中国特色社会主义不断巩固和推进的关键。
+        
+        \item \highlight{建立社会主义市场经济体制}。在社会主义条件下发展市场经济是改革开放新的历史性突破。明确建立社会主义市场经济体制为我国经济体制改革的目标，既要发挥市场经济的长处，又要发挥社会主义制度的优越性，坚持从我国实际出发，走出一条自己的路。
+        
+        \item \highlight{全面建设小康社会}。立足于我国基本国情，在人民生活总体达到小康水平的基础上，提出全面建设更高水平、更全面、更平衡的小康社会的奋斗目标。
+        
+        \item \highlight{建设社会主义政治文明}。将建设社会主义政治文明与物质文明、精神文明一起确立为社会主义现代化全面发展的三大基本目标。最根本的是坚持党的领导、人民当家作主和依法治国的有机统一。
+        
+        \item \highlight{实施“引进来”和“走出去”相结合的对外开放战略}。对外开放是一项长期的基本国策。适应经济全球化趋势和加入世界贸易组织的新形势，坚持“引进来”和“走出去”相结合，全面提高对外开放水平。
+        
+        \item \highlight{推进党的建设新的伟大工程}。办好中国的事情关键在党，紧紧围绕建设什么样的党、怎样建设党的根本问题，以改革的精神加强和改进党的建设。
+    \end{enumerate}
+    
+    \reference{参考：课本 P202}
 }
+
+\question{13}{如何理解科学发展观的科学内涵？}
+
+\question{14}{如何理解社会主义核心价值体系是兴国之魂？}
+
+\question{15}{如何理解构建社会主义和谐社会的内涵与要求？}
+
+\question{16}{新世纪新阶段，如何提高党的建设的科学化水平？}
+
 \end{document}
-
-
