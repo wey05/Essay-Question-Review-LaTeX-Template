@@ -3,7 +3,7 @@
 \contentsline {section}{3：学习本课程的要求和方法是什么？}{3}{section*.3}%
 \contentsline {section}{4：为什么我们党能够开辟新民主主义革命道路、符合中国特点的社会主义改造道路、中国特色社会主义建设道路？}{5}{section*.4}%
 \contentsline {section}{5：如何理解新民主主义革命的政治、经济和文化纲领？}{6}{section*.5}%
-\contentsline {section}{6：如何理解新民主主义革命的基本经验？}{7}{section*.6}%
+\contentsline {section}{6：如何理解新民主主义革命的基本经验？}{8}{section*.6}%
 \contentsline {section}{7：社会主义改造的历史经验是什么？}{8}{section*.7}%
 \contentsline {section}{8：社会主义建设道路初步探索过程中取得了哪些重大理论成果？}{10}{section*.8}%
 \contentsline {section}{9：如何认识中国特色社会主义理论体系的构成及其形成发展？}{11}{section*.9}%
